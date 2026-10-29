@@ -1,0 +1,23 @@
+{
+  "name": "gc-optimiser-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GC Optimiser - AI business decision intelligence engine for Android",
+  "scripts": {
+    "vendor": "node scripts/copy-vendor.js",
+    "test": "node scripts/test-engine.js",
+    "sync": "npm run vendor && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/share": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0",
+    "mammoth": "^1.8.0",
+    "pdfjs-dist": "3.11.174",
+    "xlsx": "0.18.5"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0"
+  }
+}

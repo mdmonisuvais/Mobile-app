@@ -1,0 +1,11 @@
+{
+  "appId": "com.gcoptimiser.app",
+  "appName": "GC Optimiser",
+  "webDir": "www",
+  "backgroundColor": "#10243a",
+  "server": { "androidScheme": "https" },
+  "plugins": {
+    "CapacitorHttp": { "enabled": true },
+    "StatusBar": { "style": "DARK", "backgroundColor": "#10243a", "overlaysWebView": false }
+  }
+}

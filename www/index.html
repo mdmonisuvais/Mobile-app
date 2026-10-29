@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#10243a">
+<meta name="color-scheme" content="light dark">
+<title>GC Optimiser</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="app">
+  <header class="hero">
+    <div class="hero-top">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V6M16 20v-6M22 20H2"/></svg>
+      </div>
+      <div>
+        <div class="eyebrow">Decision intelligence</div>
+        <h1>GC Optimiser</h1>
+      </div>
+      <span id="aiBadge" class="badge off">AI off</span>
+    </div>
+    <p class="hero-sub">Ask a business question, add your data, and get a transparent analysis with solver-backed numbers.</p>
+  </header>
+
+  <main>
+    <!-- ANALYZE -->
+    <section id="tab-analyze" class="tab active">
+      <div class="card">
+        <label class="h" for="question">What decision are you trying to make?</label>
+        <textarea id="question" rows="5" placeholder="e.g. Forecast monthly sales for the next 6 months using the attached data."></textarea>
+        <p class="hint">Be specific: the decision, objective, constraints, timeframe. Missing inputs are surfaced instead of invented.</p>
+        <div id="examples" class="chips"></div>
+      </div>
+
+      <div class="card">
+        <div class="row between">
+          <span class="h">Context</span>
+          <span id="ctxSummary" class="muted small">No files attached</span>
+        </div>
+        <div id="fileChips" class="chips"></div>
+        <div class="row gap">
+          <button class="btn ghost" id="addFilesBtn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5 12.5 21a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3"/></svg>
+            Add files
+          </button>
+          <button class="btn ghost" id="sampleBtn">Use sample data</button>
+        </div>
+        <input id="fileInput" type="file" multiple hidden accept=".csv,.tsv,.xlsx,.xls,.pdf,.docx,.txt,.md,.json,.log">
+        <p class="hint">CSV / Excel become tables for calculations. PDF, DOCX and text are searched for relevant excerpts. Files stay on this device.</p>
+      </div>
+
+      <div class="row gap sticky-actions">
+        <button class="btn primary grow" id="runBtn">Analyse &amp; solve</button>
+        <button class="btn ghost" id="clearBtn">Clear</button>
+      </div>
+
+      <div id="results"></div>
+    </section>
+
+    <!-- TOOLS -->
+    <section id="tab-tools" class="tab">
+      <div class="card">
+        <span class="h">Solver lab</span>
+        <p class="hint">Run any solver directly, no AI or internet needed. Table-based solvers use the data you have loaded.</p>
+        <label class="lbl" for="toolType">Solver</label>
+        <select id="toolType"></select>
+        <div id="toolForm"></div>
+        <div class="row gap">
+          <button class="btn primary grow" id="toolRun">Run solver</button>
+          <button class="btn ghost" id="toolExample">Load example</button>
+        </div>
+      </div>
+      <div id="toolResults"></div>
+    </section>
+
+    <!-- DATA -->
+    <section id="tab-data" class="tab">
+      <div id="dataView"></div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="tab-history" class="tab">
+      <div id="historyView"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="tab-settings" class="tab">
+      <div class="card">
+        <span class="h">OpenAI connection</span>
+        <p class="hint">Needed only for natural-language routing and document-grounded reasoning. Your key is stored on this device and sent only to api.openai.com.</p>
+        <label class="lbl" for="apiKey">API key</label>
+        <div class="row gap">
+          <input id="apiKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-...">
+          <button class="btn ghost" id="toggleKey" aria-label="Show or hide key">Show</button>
+        </div>
+        <label class="lbl" for="model">Model</label>
+        <input id="model" type="text" list="modelList" autocapitalize="off" spellcheck="false" placeholder="gpt-4o-mini">
+        <datalist id="modelList"><option value="gpt-4o-mini"><option value="gpt-4o"><option value="gpt-4.1-mini"><option value="gpt-4.1"></datalist>
+        <div class="row gap">
+          <button class="btn primary grow" id="saveKey">Save</button>
+          <button class="btn ghost" id="testKey">Test</button>
+          <button class="btn danger" id="removeKey">Remove</button>
+        </div>
+        <p id="keyStatus" class="small muted"></p>
+      </div>
+      <div class="card">
+        <span class="h">Privacy</span>
+        <ul class="plain small">
+          <li>Emails, phone numbers and long ID-like numbers are redacted from text before it is sent to the AI.</li>
+          <li>Only the first 25 rows and a numeric summary of each table are sent, never whole files.</li>
+          <li>AI output is never executed. It can only propose a JSON spec that built-in solvers validate.</li>
+          <li>Treat this as decision support: forecasts are estimates and high-impact decisions need human approval.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="h">About</span>
+        <p class="small muted" id="about"></p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" id="nav">
+    <button data-tab="analyze" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 17v4M17 19h4"/></svg><span>Analyse</span></button>
+    <button data-tab="tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.6-.6-.6-2.6z"/></svg><span>Solvers</span></button>
+    <button data-tab="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span>Data</span></button>
+    <button data-tab="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>History</span></button>
+    <button data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></button>
+  </nav>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="busy" class="busy" hidden><div class="spinner"></div><div id="busyMsg">Working…</div></div>
+</div>
+
+<script src="js/solvers.js"></script>
+<script src="js/util.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
