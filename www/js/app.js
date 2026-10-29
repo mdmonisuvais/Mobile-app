@@ -444,6 +444,17 @@
       const k = $('#apiKey').value.trim(); if (!k) { keyStatus('Enter a key first.', 'err'); return; }
       keyStatus('Checking…'); try { await AI.testKey(k); keyStatus('Key accepted by OpenAI.', 'ok'); } catch (e) { keyStatus(e.message, 'err'); }
     });
+    $('#importKey').addEventListener('click', () => $('#keyFile').click());
+    $('#keyFile').addEventListener('change', async (e) => {
+      const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+      try {
+        const m = (await f.text()).match(/sk-[A-Za-z0-9_\-]{20,}/);
+        if (!m) { keyStatus('No OpenAI key (starting with sk-) found in that file.', 'err'); return; }
+        state.apiKey = m[0]; state.model = $('#model').value.trim() || 'gpt-4o-mini';
+        store.set('gc_key', state.apiKey); store.set('gc_model', state.model); $('#apiKey').value = state.apiKey; updateAIBadge();
+        keyStatus('Key imported and saved on this device.', 'ok'); toast('AI is on');
+      } catch (err) { keyStatus('Could not read that file.', 'err'); }
+    });
     $('#removeKey').addEventListener('click', () => { state.apiKey = ''; store.del('gc_key'); $('#apiKey').value = ''; updateAIBadge(); keyStatus('Key removed from this device.', 'ok'); });
 
     document.addEventListener('click', (e) => {
